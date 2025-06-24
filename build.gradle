@@ -26,6 +26,7 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.awaitility:awaitility:4.2.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
 }
 
 tasks.named('test') {
