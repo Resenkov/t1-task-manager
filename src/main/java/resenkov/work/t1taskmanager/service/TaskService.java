@@ -21,10 +21,12 @@ public class TaskService {
     }
 
     public List<Task> getAllTasks() {
+        log.debug("Получены все задачи");
         return repository.findAll();
     }
 
     public Optional<Task> getTaskById(Long id) {
+        log.debug("Успешно получена задача, ID: {}",id);
         return repository.findById(id);
     }
 
@@ -38,6 +40,7 @@ public class TaskService {
 
         Task savedTask = repository.save(task);
         scheduleCompletion(savedTask.getId(), duration);
+        log.info("Создана новая задача: {}, лимит: {}мс", description, duration);
         return savedTask;
     }
 
@@ -59,15 +62,18 @@ public class TaskService {
     }
 
     public void cancelTask(Long taskId) {
+        log.debug("Отмена задачи по ID: {}", taskId);
         repository.findById(taskId).ifPresent(task -> {
             synchronized (task) {
                 if (task.getStatus() == Task.Status.DONE) {
+                    log.warn("Нельзя отменить выполненную задачу!: {}", taskId);
                     throw new IllegalStateException("Cannot cancel DONE task");
                 }
                 if (task.getStatus() == Task.Status.IN_PROGRESS) {
                     task.setStatus(Task.Status.CANCELED);
                     task.setModifiedDate(LocalDateTime.now());
                     repository.update(task);
+                    log.info("Задача успешно отменена, ID: {}", taskId);
                     ScheduledFuture<?> future = scheduledTasks.get(taskId);
                     if (future != null) future.cancel(false);
                     scheduledTasks.remove(taskId);
