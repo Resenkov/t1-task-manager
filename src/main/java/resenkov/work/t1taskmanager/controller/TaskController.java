@@ -43,7 +43,6 @@ public class TaskController {
             service.cancelTask(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalStateException e) {
-            log.error("Нельзя отменить выполненную задачу!");
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
